@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ITetromino } from '../../models/itetromino';
+import { IPosition } from '../../models/iposition';
 
 @Component({
   selector: 'app-game',
@@ -18,14 +19,33 @@ export class GameComponent {
   space:number = 2;
   board:number[][] = [];
 
-  tetrominos:ITetromino[] = [
-  {color:'blue',shape:[[1,1,1,1]]},
-  {color:'orange',shape:[[1,1],[1,1]]},
-  {color:'cyan',shape:[[1,1,1],[1,0,0]]},
-  {color:'yellow',shape:[[0,1,0],[1,1,1]]},
-  {color:'red',shape:[[0,1,1],[1,1,0]]},
-  {color:'green',shape:[[1,1,0],[0,1,1]]},
-]
+
+  testPosition:IPosition = {
+    row:4,
+    column:0
+  }
+
+
+
+  T:ITetromino = {
+    id:1,
+    blockSize:30,
+    color:'blue',
+    rotation:0,
+    initPosition:this.testPosition,
+    position:this.testPosition,
+    shapes:[
+      [{row:0,column:1},{row:1,column:0},{row:1,column:1},{row:1,column:2}],
+      [{row:0,column:1},{row:1,column:1},{row:1,column:2},{row:2,column:1}],
+      [{row:1,column:0},{row:1,column:1},{row:1,column:2},{row:2,column:1}],
+      [{row:0,column:1},{row:1,column:0},{row:1,column:1},{row:2,column:1}]
+    ]
+  }
+
+  currentShape(T:ITetromino){
+    return T.shapes[T.rotation];
+  }
+
 
   ngOnInit(): void {
     this.initBoard()
@@ -36,6 +56,7 @@ export class GameComponent {
     const canvas = this.canvasElement.nativeElement;
     this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     this.draw();
+    this.drawTetromino(this.T);
   }
 
   //Inicializa toda la matríz en 0, en este caso son 20 filas con 10 columnas donde cada una vale 0
@@ -94,6 +115,28 @@ export class GameComponent {
     console.log(content)
   }
 
+  //Guardar en los position la fila y la columna donde se va a dibujar
+  //Buscar en [x][y] el position, ya despues cambias sus valores de la matriz
+  //de manera que en vez de que sean 0, sean 1, y ya comparas si son 1 les cambias el color
+
+
+
+  ////TETROMINOS
+  drawTetromino(T:ITetromino){
+    for (let i = 0; i < T.shapes.length; i++) {
+      
+      const shape = this.currentShape(T)
+      
+        //Le vamos pasando los valores de la matriz para que vaya calculando las posiciones de cada bloque
+        const position = this.getPosition(T.initPosition.column+shape[i].column,T.initPosition.row+shape[i].row)
+        console.log(position)
+        this.board[T.initPosition.row+shape[i].row][T.initPosition.column+shape[i].column] = 1
+        this.drawBlock(position.x,position.y,this.blockSize,'red','aliceblue')
+
+      
+    }
+    this.printBoard();
+  }
 
 }
 

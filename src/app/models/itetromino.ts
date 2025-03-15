@@ -1,4 +1,10 @@
+import { IPosition } from "./iposition";
 export interface ITetromino {
-    shape: number[][];
+    id:number;
+    blockSize:number;
     color:string;
+    rotation:number;
+    initPosition:IPosition;
+    position:IPosition;
+    shapes:IPosition[][];
 }
